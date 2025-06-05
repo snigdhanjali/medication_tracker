@@ -18,63 +18,101 @@ print("🩺 Welcome to medication reminder app🩺 ")
 # }
 # This dictionary can then be stored in a larger dictionary called users.
 # Store this information in a file and then read from it later.
-import getpass
-user_database = {}
+
 from datetime import datetime, timedelta
-print("what would you like to do?")
-print("1.login")
-print("2.sign_up")
-choose_action= input("Enter 1 or 2: ").strip()
-    
-def sign_up():
-    user_name = str(input("user_name: ")).lower()
-    age = int(input("age: "))
-    gender = str(input("gender(male/female/trans):")).lower()
-    pasword = getpass.getpass("set a pasword(hidden): ")
+import getpass
+import json
+import os
+
+user_database = {}  # Initialize an empty dictionary to store user data.
+
+def sign_up(user_database):
+    print("📝 Please fill in the details to sign up:")
+
+    while True:
+        user_name = str(input("Username: ").strip())
+        if user_name:
+            break
+        print("❌ Username cannot be blank.")
+
+    # Get valid integer age
+    while True:
+        age_input = input("Age: ").strip()
+        if not age_input:
+            print("❌ Age cannot be blank.")
+            continue
+        if not age_input.isdigit():
+            print("❌ Please enter a valid number for age.")
+            continue
+        age = int(age_input)
+        break
+
+    # Get valid gender
+    while True:
+        gender = str(input("Gender (Male/Female/Trans): ").strip())
+        if gender in ["Male", "Female", "Trans"]:
+            break
+        print("❌ Please enter 'Male', 'Female', or 'Trans'.")
+
+    # Get password (just check it's not blank)
+    while True:
+        password = str(getpass.getpass("Set a Password (hidden): ").strip())
+        if password:
+            break
+        print("❌ Password cannot be blank.")
 
     user_database[user_name] = {
-        "age":age,
-        "gender":gender,
-        "pasword":pasword
-    }    
+        "Username": user_name,
+        "Age":age,
+        "Gender":gender,
+        "Password":password
+    }
 
-    if gender == 'male':
-         print("gender set to male. ")
-    elif gender == 'female':
-        print("gender set to female.")
-    elif gender == 'trans':
-        print("gender set to trans. ")
-    elif gender == 'unknown':
-        print("unknown gender")
+    with open("users.json", "w") as file:
+        json.dump(user_database, file, indent=4) # Save the user database to a JSON file.
+
+    print(f"✅ User {user_name} signed up successfully!")
     print("✅ sign_up complete. you can now login.")
+    login()
 
 def login():       
-    login_user = input("enter your user_name: ")
-    pasword = getpass.getpass("enter your pasword(hidden): ")
-    if login_user in user_database and user_database [login_user] == pasword:
+    login_user = str(input("Enter your Username: "))
+    password = str(getpass.getpass("Enter your password(hidden): "))
+
+    if not os.path.exists("users.json"):
+        with open("users.json", "w") as file: # Create an empty dictionary and save to file
+            json.dump({}, file, indent=4)
+
+    with open("users.json", "r") as file: # Open the JSON file to read the user database.
+        login_database = json.load(file)
+
+    if login_user in login_database.keys() and login_database[login_user]['Password'] == password: #keys() will force to search in the keys of the dictionary as a list and see how the password value is accessed by double square brackets.
         print("✅ login sucessfully!")
     else:
-        print("❌ user name not found!")
+        print("❌ Username not found or password is incorrect.")
+        choose_action = input("Please try again. Press 1 to try again or 2 to sign up: ").strip()
+        choose_action_func(choose_action)
 
-if choose_action == "1":
-    login()
-elif choose_action == "2":
-    sign_up()
-else:
-    print("invalid option. please enter 1 or 2.")
-if choose_action == "sign_up":
-    sign_up()
-    if login():
-        pass
-elif choose_action == login:
-    if not login():    
-        choice = input("Do you want to sign_up or try again ?(type \"sign_up\",try): ").lower()
-        if choice == "sign_up":
-            sign_up()
-            login()
-        elif choice == "tyr":
-            login()
-            print("exiting...")      
+def choose_action_func(choose_action):
+    if choose_action == '1':
+        print("You chose to login.")
+        login()
+    elif choose_action == '2':
+        print("You chose to sign up.")
+        sign_up(user_database)
+    else:
+        print("Invalid option. Please enter 1 for Login or 2 for Sign Up.")
+        choose_action = input("Enter either 1 or 2: ").strip()
+        choose_action_func(choose_action) # Using recursion to call the function again if the input is invalid.
+
+# Made the messages more clear and concise.
+print("Kindly choose an action:")
+print("1 for Login") 
+print("2 for Sign Up")
+
+# Brought thr choose_action here so that code looks cleaner and more organized.
+choose_action = input("Enter either 1 or 2: ").strip() # Made the input more robust by stripping whitespace.
+choose_action_func(choose_action) # Call the choose_action function with the user's input.  
         
 pt_name = input("Name: ")
 pt_age = input("Age: ")
