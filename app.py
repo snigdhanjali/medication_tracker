@@ -6,9 +6,17 @@ print("🩺 Welcome to medication reminder app🩺 ")
     # validate that gender is string and it is Male/Female/Trans
     # validate that passowrd is atleast 8 char long and max 20 char. If time: Combination of atleast 1 special char, 1 digit, 1 lower case and 1 uper case
     # Once Signup is done. Ask the person to login. Login takes name and password as entry. If time: Password entry should be invisible.
-    # Now the person can add Medication name, dosage, frequency(think about this later.)
-# If person chooses to login:
+    # If person chooses to login:
     # Then directly ask them medication details as above.
+    # Now the person can add Medication name, dosage, frequency(think about this later.)
+    # Once the person is logged in ask him if he is trying to create or update or read or delete a reminder.
+    # If he is trying to read a reminder then just print out the contents of his user_name key use pprint module.
+    # if he is trying to delete a reminder let him delete it by calling dict.del() function.
+    # if he is trying to update his reminder then asking him for new content of the reminder and replace the exisiting content can be done by dict[user_name][reminder][dosage]=dosage.
+    # if he is trying to create a reminder ask him for reminder name, dosage etc store it in a disctionary and then this dictionary can be added to the username disctionary
+    # try to decompose this storage into small problems and use fucntions so that code is re-used.
+    # we will worry about sound and reminders later.
+
 # When you take input for the sign up use a dictionary. How?
 # user_detail = {
 #     'name': '',
@@ -20,6 +28,7 @@ print("🩺 Welcome to medication reminder app🩺 ")
 # Store this information in a file and then read from it later.
 import getpass
 user_database = {}
+import pprint
 from datetime import datetime, timedelta
 print("what would you like to do?")
 print("1.login")
@@ -30,12 +39,12 @@ def sign_up():
     user_name = str(input("user_name: ")).lower()
     age = int(input("age: "))
     gender = str(input("gender(male/female/trans):")).lower()
-    pasword = getpass.getpass("set a pasword(hidden): ")
+    password = getpass.getpass("set a password(hidden): ")
 
     user_database[user_name] = {
         "age":age,
         "gender":gender,
-        "pasword":pasword
+        "pasword":password
     }    
 
     if gender == 'male':
@@ -47,14 +56,101 @@ def sign_up():
     elif gender == 'unknown':
         print("unknown gender")
     print("✅ sign_up complete. you can now login.")
+    login()
 
 def login():       
     login_user = input("enter your user_name: ")
-    pasword = getpass.getpass("enter your pasword(hidden): ")
-    if login_user in user_database and user_database [login_user] == pasword:
+    password = getpass.getpass("enter your password(hidden): ")
+    if login_user in user_database.keys() and user_database [login_user].get(password) == password: 
         print("✅ login sucessfully!")
     else:
         print("❌ user name not found!")
+
+def create_reminder(user):
+    print("Creating a new reminder...")
+    reminder_name = input("Reminder name: ").strip()
+    dosage = input("Dosage details: ").strip()
+    time = input("Time: ").strip()
+
+    reminder_data = {
+        "Dosage": dosage,
+        "Time": time
+    }
+
+    user_database[user].setdefault("Reminders", {})[reminder_name] = reminder_data
+    print("✅ Reminder created.")
+
+def read_reminders(user):
+    print("Your reminders:")
+    reminders = user_database[user].get("Reminders", {})
+    if reminders:
+        pprint.pprint(reminders)
+    else:
+        print("No reminders found.")
+
+def update_reminder(user):
+    reminders = user_database[user].get("Reminders", {})
+    if not reminders:
+        print("❌ No reminders to update.")
+        return
+
+    print("🔁 Available reminders:")
+    for name in reminders:
+        print(f" - {name}")
+    reminder_name = input("Which reminder do you want to update? ").strip()
+
+    if reminder_name in reminders:
+        new_dosage = input("New dosage: ").strip()
+        new_time = input("New time: ").strip()
+        reminders[reminder_name] = {
+            "Dosage": new_dosage,
+            "Time": new_time
+        }
+        print("✅ Reminder updated.")
+    else:
+        print("❌ Reminder not found.")
+
+def delete_reminder(user):
+    reminders = user_database[user].get("Reminders", {})
+    if not reminders:
+        print("❌ No reminders to delete.")
+        return
+
+    print("🗑️ Available reminders:")
+    for name in reminders:
+        print(f" - {name}")
+    reminder_name = input("Which reminder do you want to delete? ").strip()
+
+    if reminder_name in reminders:
+        del reminders[reminder_name]
+        print("🗑️ Reminder deleted.")
+    else:
+        print("❌ Reminder not found.")
+
+def reminder_menu(user):
+    while True:
+        print("What would you like to do?")
+        print("1. Create a reminder")
+        print("2. Read your reminders")
+        print("3. Update a reminder")
+        print("4. Delete a reminder")
+        print("5. Exit")
+
+        choice = input("Enter choice (1-5): ").strip()
+
+        if choice == "1":
+            create_reminder(user)
+        elif choice == "2":
+            read_reminders(user)
+        elif choice == "3":
+            update_reminder(user)
+        elif choice == "4":
+            delete_reminder(user)
+        elif choice == "5":
+            print("👋 Exiting reminder manager.")
+            break
+        else:
+            print("❌ Invalid choice. Please select 1-5.")
 
 if choose_action == "1":
     login()
@@ -62,20 +158,7 @@ elif choose_action == "2":
     sign_up()
 else:
     print("invalid option. please enter 1 or 2.")
-if choose_action == "sign_up":
-    sign_up()
-    if login():
-        pass
-elif choose_action == login:
-    if not login():    
-        choice = input("Do you want to sign_up or try again ?(type \"sign_up\",try): ").lower()
-        if choice == "sign_up":
-            sign_up()
-            login()
-        elif choice == "tyr":
-            login()
-            print("exiting...")      
-        
+
 pt_name = input("Name: ")
 pt_age = input("Age: ")
 pt_sex =input ("Gender: ")
