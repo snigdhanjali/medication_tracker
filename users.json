@@ -1,0 +1,15 @@
+{
+    "Sekhar": {
+        "Username": "Sekhar",
+        "Age": 32,
+        "Gender": "Male",
+        "Password": "1234",
+        "Reminders": {
+            "rem1": {
+                "Reminder_Name": "rem1",
+                "Dosage": "3 Tab",
+                "Time": "6 AM, 2 PM & 10 PM"
+            }
+        }
+    }
+}
