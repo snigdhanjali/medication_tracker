@@ -1,29 +1,7 @@
-print("🩺 Welcome to medication reminder app🩺 ")
-# Ask to either login or Signup. Choose login or signup.
-    # if signup then ask for name, age, gender and password.
-    # Validate that Name should be always string.
-    # validate that age is always number and between 0-200.
-    # validate that gender is string and it is Male/Female/Trans
-    # validate that passowrd is atleast 8 char long and max 20 char. If time: Combination of atleast 1 special char, 1 digit, 1 lower case and 1 uper case
-    # Once Signup is done. Ask the person to login. Login takes name and password as entry. If time: Password entry should be invisible.
-    # If person chooses to login:
-    # Then directly ask them medication details as above.
-    # Now the person can add Medication name, dosage, frequency(think about this later.)
-    # Once the person is logged in ask him if he is trying to create or update or read or delete a reminder.
-    # If he is trying to read a reminder then just print out the contents of his user_name key use pprint module.
-    # if he is trying to delete a reminder let him delete it by calling dict.del() function.
-    # if he is trying to update his reminder then asking him for new content of the reminder and replace the exisiting content can be done by dict[user_name][reminder][dosage]=dosage.
-    # if he is trying to create a reminder ask him for reminder name, dosage etc store it in a disctionary and then this dictionary can be added to the username disctionary
-    # try to decompose this storage into small problems and use fucntions so that code is re-used.
-    # we will worry about sound and reminders later.
-# Next step is to validate all the inputs same as in signup function
-# Figure out date time and how to set reminders.
-# Implement a simple remionder system that creates a canvas and flashes a message on the screen when the time comes.
-
 from datetime import datetime, timedelta
-from graphics import *
 import os, sys, time, select, getpass, json
 
+print("🩺 Welcome to medication reminder app🩺 ")
 print("what would you like to do?")
 print("1.login")
 print("2.sign_up")
